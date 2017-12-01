@@ -1,53 +1,32 @@
--- gonzalez, j
--- dec. 2017
-
+-- gonzalez, j | december 2017
 -- lhashdos.lua
 
 local ffi = require 'ffi'
 local bit = require 'bit'
-
-local chrs
-local min, max
-local camt
-
-math.randomseed(os.time())
+local char_array
 
 do
-	chrs = ffi.new 'char[255]'
-	min = math.random((' o'):byte(1,2))
-	max = min + 15
-	for i = min, max do
-		chrs[i-min] = i
+	math.randomseed(os.time())
+	char_array = ffi.new 'char[15]'
+	local lowest_char = math.random((' o'):byte(1, 2))
+	for i = lowest_char, lowest_char + 15 do
+		char_array[i - lowest_char] = i
 	end
-	camt = max-min
-	ffi.cdef 'typedef char str[32];'
+
+	ffi.cdef 'typedef char collidable[32];'
 end
 
-local function get(hchr, oamt, pos)
-	local buf = ffi.new(('str[%d]'):format(oamt))
-	ffi.fill(buf, ffi.sizeof(buf), hchr:byte())
-	pos = pos or 1
+local function get(spacer, outputs_desired, restart_position)
+	local bit_rshift = bit.rshift
+	local start = restart_position or 1
+	local buf = ffi.new('collidable[?]', outputs_desired)
+	ffi.fill(buf, ffi.sizeof(buf), spacer:byte())
 
-	local sn = pos
-	local _rshift = bit.rshift
-	for _ = sn, oamt do
-		for ci = 0, 15 do
-			buf[sn - pos][2 * (15 - ci)] = chrs[_rshift(sn, ci * 2) % camt]
+	for buf_pos = 0, outputs_desired - start do
+		for offset = 0, 30, 2 do
+			buf[buf_pos][offset] = char_array[bit_rshift(buf_pos + start, offset) % 15]
 		end
-		sn = sn + 1
 	end
+
 	return buf
-end
-
--- Example usage --
-
-do
-	local amt = 10
-	local buf = get('_', amt)
-	local strs = {}
-	for i = 0, amt - 1 do
-		strs[i+1] = ffi.string(buf[i], 32)
-	end
-
-	print(table.concat(strs, '\n'))
 end
