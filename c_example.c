@@ -6,8 +6,8 @@
 #define ignored 'v'
 
 typedef char str[33];
-const char   *symbols = "!\"#$%&'()*+,-./";
 
+const char *symbols = "!\"#$%&'()*+,-./";
 void fill(const int amt, str *buf) { 
   for (int i = amt; i; i--)
     for (int j = 0; j < 31; j += 2)
