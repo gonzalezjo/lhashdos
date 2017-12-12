@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
   const long amt = 50000; // strings to generate
   str *buffer = (str*) malloc(str_s * amt);
 
-  memset(buffer, ignored, amt * str_s); // where v = 
+  memset(buffer, ignored, amt * str_s);
   fill(amt, buffer);
 
   for(int i = 0; i < amt; i++)
